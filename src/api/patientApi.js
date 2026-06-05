@@ -1,81 +1,206 @@
 // src/api/patientApi.js
 const API_BASE = "https://fedskillstest.coalitiontechnologies.workers.dev";
 
+// Basic Auth credentials
+const username = "coalition";
+const password = "skills-test";
+const basicAuth = btoa(`${username}:${password}`);
+
 export const fetchPatientData = async () => {
   try {
     const response = await fetch(`${API_BASE}/patients`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Basic ${basicAuth}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+
     // Find Jessica Taylor from the patients array
     const jessicaTaylor = data.find(
       (patient) => patient.name === "Jessica Taylor",
     );
 
     if (!jessicaTaylor) {
-      throw new Error("Jessica Taylor data not found");
+      throw new Error("Jessica Taylor data not found in API response");
     }
 
     return jessicaTaylor;
   } catch (error) {
     console.error("Failed to fetch patient data:", error);
-    // Return fallback data based on the screenshot
+
+    // Single fallback data for Jessica Taylor
     return {
       name: "Jessica Taylor",
       date_of_birth: "1996-08-23",
       gender: "Female",
+      age: 28,
+      profile_picture: "https://fedskillstest.ct.digital/4.png",
       phone_number: "(415) 555-1234",
-      emergency_contact: "(415) 666-9678",
+      emergency_contact: "(415) 555-5678",
       insurance_type: "Sunrise Health Assurance",
       diagnosis_history: [
         {
-          month: "October 2024",
-          blood_pressure: { systolic: 160, diastolic: 78 },
-          respiratory_rate: 20,
-          temperature: 98.6,
-          heart_rate: 78,
+          month: "March",
+          year: 2024,
+          blood_pressure: {
+            systolic: {
+              value: 160,
+              levels: "Higher than Average",
+            },
+            diastolic: {
+              value: 78,
+              levels: "Lower than Average",
+            },
+          },
+          heart_rate: {
+            value: 78,
+            levels: "Lower than Average",
+          },
+          respiratory_rate: {
+            value: 20,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.6,
+            levels: "Normal",
+          },
         },
         {
-          month: "September 2024",
-          blood_pressure: { systolic: 155, diastolic: 76 },
-          respiratory_rate: 18,
-          temperature: 98.4,
-          heart_rate: 76,
+          month: "February",
+          year: 2024,
+          blood_pressure: {
+            systolic: {
+              value: 155,
+              levels: "Higher than Average",
+            },
+            diastolic: {
+              value: 76,
+              levels: "Normal",
+            },
+          },
+          heart_rate: {
+            value: 76,
+            levels: "Normal",
+          },
+          respiratory_rate: {
+            value: 18,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.4,
+            levels: "Normal",
+          },
         },
         {
-          month: "August 2024",
-          blood_pressure: { systolic: 148, diastolic: 74 },
-          respiratory_rate: 19,
-          temperature: 98.5,
-          heart_rate: 77,
+          month: "January",
+          year: 2024,
+          blood_pressure: {
+            systolic: {
+              value: 148,
+              levels: "Higher than Average",
+            },
+            diastolic: {
+              value: 74,
+              levels: "Normal",
+            },
+          },
+          heart_rate: {
+            value: 77,
+            levels: "Normal",
+          },
+          respiratory_rate: {
+            value: 19,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.5,
+            levels: "Normal",
+          },
         },
         {
-          month: "July 2024",
-          blood_pressure: { systolic: 152, diastolic: 75 },
-          respiratory_rate: 20,
-          temperature: 98.6,
-          heart_rate: 78,
+          month: "December",
+          year: 2023,
+          blood_pressure: {
+            systolic: {
+              value: 152,
+              levels: "Higher than Average",
+            },
+            diastolic: {
+              value: 75,
+              levels: "Normal",
+            },
+          },
+          heart_rate: {
+            value: 78,
+            levels: "Normal",
+          },
+          respiratory_rate: {
+            value: 20,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.6,
+            levels: "Normal",
+          },
         },
         {
-          month: "June 2024",
-          blood_pressure: { systolic: 145, diastolic: 72 },
-          respiratory_rate: 18,
-          temperature: 98.3,
-          heart_rate: 75,
+          month: "November",
+          year: 2023,
+          blood_pressure: {
+            systolic: {
+              value: 145,
+              levels: "Normal",
+            },
+            diastolic: {
+              value: 72,
+              levels: "Normal",
+            },
+          },
+          heart_rate: {
+            value: 75,
+            levels: "Normal",
+          },
+          respiratory_rate: {
+            value: 18,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.3,
+            levels: "Normal",
+          },
         },
         {
-          month: "May 2024",
-          blood_pressure: { systolic: 140, diastolic: 70 },
-          respiratory_rate: 17,
-          temperature: 98.2,
-          heart_rate: 74,
+          month: "October",
+          year: 2023,
+          blood_pressure: {
+            systolic: {
+              value: 140,
+              levels: "Normal",
+            },
+            diastolic: {
+              value: 70,
+              levels: "Normal",
+            },
+          },
+          heart_rate: {
+            value: 74,
+            levels: "Normal",
+          },
+          respiratory_rate: {
+            value: 17,
+            levels: "Normal",
+          },
+          temperature: {
+            value: 98.2,
+            levels: "Normal",
+          },
         },
       ],
       diagnostic_list: [
@@ -95,7 +220,7 @@ export const fetchPatientData = async () => {
           status: "Inactive",
         },
       ],
-      lab_results: ["Blood Test", "CT Scan", "X-Ray", "Urine Analysis"],
+      lab_results: ["Blood Tests", "CT Scans", "X-Ray", "Urinalysis"],
     };
   }
 };

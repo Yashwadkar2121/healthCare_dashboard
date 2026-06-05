@@ -1,169 +1,193 @@
 // src/components/DiagnosisHistory.jsx
-
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
 import { motion } from "framer-motion";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-);
+import { useEffect, useRef, useState } from "react";
+import Chart from "chart.js/auto";
 
 const DiagnosisHistory = ({ diagnosisHistory }) => {
-  // Get last 6 months of data
-  const last6Months = diagnosisHistory?.slice(-6).reverse() || [];
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
 
-  const chartData = {
-    labels: last6Months.map((item) => {
-      const date = new Date(item.month);
-      return date.toLocaleString("default", {
-        month: "short",
-        year: "numeric",
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!diagnosisHistory || diagnosisHistory.length === 0) return;
+
+    const timer = setTimeout(() => {
+      const ctx = chartRef.current?.getContext("2d");
+      if (!ctx) return;
+
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+        chartInstance.current = null;
+      }
+
+      const labels = diagnosisHistory.map((entry) => {
+        if (windowWidth < 640) {
+          return `${entry.month.slice(0, 3)} ${entry.year}`;
+        }
+        return `${entry.month} ${entry.year}`;
       });
-    }),
-    datasets: [
-      {
-        label: "Systolic BP",
-        data: last6Months.map((item) => item.blood_pressure.systolic),
-        borderColor: "#E74C3C",
-        backgroundColor: "rgba(231, 76, 60, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#E74C3C",
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
-      {
-        label: "Diastolic BP",
-        data: last6Months.map((item) => item.blood_pressure.diastolic),
-        borderColor: "#3498DB",
-        backgroundColor: "rgba(52, 152, 219, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#3498DB",
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
-    ],
-  };
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          usePointStyle: true,
-          boxWidth: 8,
-        },
-      },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: false,
-        min: 60,
-        max: 180,
-        grid: {
-          color: "#e2e8f0",
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-    },
-  };
+      const systolicData = diagnosisHistory.map(
+        (entry) => entry.blood_pressure.systolic.value,
+      );
+      const diastolicData = diagnosisHistory.map(
+        (entry) => entry.blood_pressure.diastolic.value,
+      );
 
-  const latestReading = last6Months[last6Months.length - 1] || {};
-  const respiratoryRate = latestReading.respiratory_rate || 20;
-  const temperature = latestReading.temperature || 98.6;
-  const heartRate = latestReading.heart_rate || 78;
+      chartInstance.current = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Systolic (mmHg)",
+              data: systolicData,
+              borderColor: "#E66A6A",
+              backgroundColor: "rgba(230, 106, 106, 0.1)",
+              tension: 0.3,
+              fill: false,
+              pointBackgroundColor: "#E66A6A",
+              pointBorderColor: "#E66A6A",
+              pointRadius: windowWidth < 640 ? 3 : 4,
+              pointHoverRadius: windowWidth < 640 ? 5 : 6,
+            },
+            {
+              label: "Diastolic (mmHg)",
+              data: diastolicData,
+              borderColor: "#5B8DEF",
+              backgroundColor: "rgba(91, 141, 239, 0.1)",
+              tension: 0.3,
+              fill: false,
+              pointBackgroundColor: "#5B8DEF",
+              pointBorderColor: "#5B8DEF",
+              pointRadius: windowWidth < 640 ? 3 : 4,
+              pointHoverRadius: windowWidth < 640 ? 5 : 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: windowWidth < 640 ? "bottom" : "top",
+              labels: {
+                usePointStyle: true,
+                boxWidth: 8,
+                font: { size: windowWidth < 640 ? 10 : 12 },
+              },
+            },
+            tooltip: {
+              mode: "index",
+              intersect: false,
+              callbacks: {
+                label: (context) =>
+                  `${context.dataset.label}: ${context.parsed.y} mmHg`,
+              },
+            },
+          },
+          scales: {
+            y: {
+              title: {
+                display: windowWidth >= 768,
+                text: "Blood Pressure (mmHg)",
+                color: "#666",
+              },
+              beginAtZero: false,
+              grid: { color: "#e9ecef" },
+              ticks: { font: { size: windowWidth < 640 ? 10 : 12 } },
+            },
+            x: {
+              title: {
+                display: windowWidth >= 768,
+                text: "Month",
+                color: "#666",
+              },
+              grid: { display: false },
+              ticks: {
+                font: { size: windowWidth < 640 ? 10 : 12 },
+                rotation: windowWidth < 640 ? 45 : 0,
+              },
+            },
+          },
+        },
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [diagnosisHistory, windowWidth]);
+
+  if (!diagnosisHistory || diagnosisHistory.length === 0) {
+    return (
+      <motion.div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+        <p className="text-gray-500 text-center text-sm sm:text-base">
+          No diagnosis history available
+        </p>
+      </motion.div>
+    );
+  }
+
+  const latestRecord = diagnosisHistory[diagnosisHistory.length - 1];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="card"
-    >
-      <h2 className="text-xl font-bold text-primary mb-4">Diagnosis History</h2>
-      <p className="text-sm text-gray-500 mb-4">Last 6 months</p>
+    <motion.div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6">
+      <h3 className="text-lg sm:text-xl font-bold text-[#072635] mb-4">
+        Diagnosis History
+      </h3>
 
-      <div className="h-80 mb-6">
-        <Line data={chartData} options={chartOptions} />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <div className="bg-red-50 rounded-xl p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Respiratory Rate</span>
-            <span className="text-xl">🌬️</span>
-          </div>
-          <p className="text-2xl font-bold text-primary">
-            {respiratoryRate} bpm
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="bg-rose-50 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-500 mb-1">Blood Pressure</p>
+          <p className="text-base sm:text-xl font-bold text-[#072635]">
+            {latestRecord.blood_pressure.systolic.value}/
+            {latestRecord.blood_pressure.diastolic.value}
           </p>
-          <p className="text-xs text-green-600 mt-1">✓ Normal</p>
+          <p className="text-xs text-rose-600 mt-1">
+            {latestRecord.blood_pressure.systolic.levels}
+          </p>
         </div>
 
-        <div className="bg-blue-50 rounded-xl p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Temperature</span>
-            <span className="text-xl">🌡️</span>
-          </div>
-          <p className="text-2xl font-bold text-primary">{temperature}°F</p>
-          <p className="text-xs text-green-600 mt-1">✓ Normal</p>
+        <div className="bg-blue-50 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-500 mb-1">Respiratory Rate</p>
+          <p className="text-base sm:text-xl font-bold text-[#072635]">
+            {latestRecord.respiratory_rate.value} bpm
+          </p>
+          <p className="text-xs text-green-600 mt-1">
+            {latestRecord.respiratory_rate.levels}
+          </p>
         </div>
 
-        <div className="bg-purple-50 rounded-xl p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Heart Rate</span>
-            <span className="text-xl">❤️</span>
-          </div>
-          <p className="text-2xl font-bold text-primary">{heartRate} bpm</p>
-          <p className="text-xs text-green-600 mt-1">✓ Normal</p>
+        <div className="bg-amber-50 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-500 mb-1">Temperature</p>
+          <p className="text-base sm:text-xl font-bold text-[#072635]">
+            {latestRecord.temperature.value}°F
+          </p>
+          <p className="text-xs text-green-600 mt-1">
+            {latestRecord.temperature.levels}
+          </p>
+        </div>
+
+        <div className="bg-emerald-50 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-500 mb-1">Heart Rate</p>
+          <p className="text-base sm:text-xl font-bold text-[#072635]">
+            {latestRecord.heart_rate.value} bpm
+          </p>
+          <p className="text-xs text-gray-600 mt-1">
+            {latestRecord.heart_rate.levels}
+          </p>
         </div>
       </div>
 
-      <div className="mt-4 p-3 bg-gray-50 rounded-xl">
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-600">Blood Pressure Trend</p>
-            <p className="text-sm font-medium text-primary">
-              Systolic: {latestReading.blood_pressure?.systolic || "N/A"}
-              <span className="text-red-500 ml-2">↑ Higher than average</span>
-            </p>
-            <p className="text-sm font-medium text-primary">
-              Diastolic: {latestReading.blood_pressure?.diastolic || "N/A"}
-              <span className="text-blue-500 ml-2">↓ Lower than average</span>
-            </p>
-          </div>
-        </div>
+      <div className="mt-4 overflow-x-auto">
+        <canvas ref={chartRef} style={{ maxHeight: "280px", width: "100%" }} />
       </div>
     </motion.div>
   );

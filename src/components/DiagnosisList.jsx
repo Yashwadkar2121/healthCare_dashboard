@@ -1,63 +1,71 @@
 // src/components/DiagnosisList.jsx
-
 import { motion } from "framer-motion";
 
 const DiagnosisList = ({ diagnosticList }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Under Observation":
-        return "text-yellow-600 bg-yellow-50";
-      case "Cured":
-        return "text-green-600 bg-green-50";
-      case "Inactive":
-        return "text-gray-600 bg-gray-50";
-      default:
-        return "text-gray-600 bg-gray-50";
-    }
-  };
+  if (!diagnosticList || diagnosticList.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-sm p-6"
+      >
+        <p className="text-gray-500 text-center">
+          No diagnostic list available
+        </p>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-      className="card"
+      transition={{ duration: 0.3, delay: 0.1 }}
+      className="bg-white rounded-2xl shadow-sm p-6"
     >
-      <h2 className="text-xl font-bold text-primary mb-4">Diagnostic List</h2>
+      <h3 className="text-xl font-bold text-[#072635] mb-4">Diagnostic List</h3>
+
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 rounded-xl">
-            <tr>
-              <th className="text-left p-3 text-sm font-semibold text-primary">
-                Proteins/Diagnosis
+          <thead>
+            <tr className="bg-gray-50 rounded-lg">
+              <th className="text-left py-3 px-4 text-sm font-semibold text-[#072635]">
+                Problem/Diagnosis
               </th>
-              <th className="text-left p-3 text-sm font-semibold text-primary">
+              <th className="text-left py-3 px-4 text-sm font-semibold text-[#072635]">
                 Description
               </th>
-              <th className="text-left p-3 text-sm font-semibold text-primary">
+              <th className="text-left py-3 px-4 text-sm font-semibold text-[#072635]">
                 Status
               </th>
             </tr>
           </thead>
           <tbody>
-            {diagnosticList?.map((item, index) => (
-              <motion.tr
-                key={item.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
+            {diagnosticList.map((diagnostic, index) => (
+              <tr
+                key={index}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
-                <td className="p-3 text-primary font-medium">{item.name}</td>
-                <td className="p-3 text-gray-600">{item.description}</td>
-                <td className="p-3">
+                <td className="py-3 px-4 text-sm font-medium text-[#072635]">
+                  {diagnostic.name}
+                </td>
+                <td className="py-3 px-4 text-sm text-gray-600">
+                  {diagnostic.description}
+                </td>
+                <td className="py-3 px-4">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}
+                    className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                      diagnostic.status === "Under Observation"
+                        ? "bg-amber-100 text-amber-700"
+                        : diagnostic.status === "Cured"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600"
+                    }`}
                   >
-                    {item.status}
+                    {diagnostic.status}
                   </span>
                 </td>
-              </motion.tr>
+              </tr>
             ))}
           </tbody>
         </table>
