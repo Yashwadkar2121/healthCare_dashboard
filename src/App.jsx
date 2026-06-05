@@ -15,7 +15,6 @@ function App() {
   const [error, setError] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [sidebarHeight, setSidebarHeight] = useState("auto");
 
   const rightSidebarRef = useRef(null);
 
@@ -33,38 +32,6 @@ function App() {
     };
     loadPatientData();
   }, []);
-
-  // Update sidebar height based on right sidebar height
-  useEffect(() => {
-    const updateHeight = () => {
-      if (rightSidebarRef.current) {
-        const rightSidebarRect =
-          rightSidebarRef.current.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const topOffset = rightSidebarRect.top;
-        const bottomPadding = 20;
-        const availableHeight = Math.min(
-          rightSidebarRect.height,
-          viewportHeight - topOffset - bottomPadding,
-        );
-        setSidebarHeight(`${availableHeight}px`);
-      }
-    };
-
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-
-    // Also update when content changes
-    const observer = new ResizeObserver(updateHeight);
-    if (rightSidebarRef.current) {
-      observer.observe(rightSidebarRef.current);
-    }
-
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-      observer.disconnect();
-    };
-  }, [selectedPatient, patientData]);
 
   const handlePatientSelect = useCallback((patient) => {
     setSelectedPatient(patient);
@@ -118,7 +85,7 @@ function App() {
       <div className="lg:hidden fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-[#01F0D0] text-[#072635] p-3 rounded-full shadow-lg"
+          className="bg-[#01F0D0] text-[#072635] p-3 rounded-full shadow-lg active:scale-95 transition-transform"
         >
           <svg
             className="w-6 h-6"
@@ -139,20 +106,19 @@ function App() {
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 pb-6">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 max-w-[1440px] mx-auto">
-          {/* Sidebar - Patient List with dynamic height */}
+          {/* Sidebar - Patient List */}
           <div
             className={`
               ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden lg:block lg:w-80"}
               transition-all duration-300 ease-in-out
             `}
-            style={!isMobileMenuOpen ? { height: sidebarHeight } : {}}
           >
             <div className="h-full">
               <Sidebar
@@ -168,7 +134,7 @@ function App() {
             <DiagnosisList diagnosticList={diagnosticListData} />
           </div>
 
-          {/* Right Sidebar - Reference for height */}
+          {/* Right Sidebar */}
           <div ref={rightSidebarRef} className="lg:w-80 space-y-4 md:space-y-6">
             <PatientInfo patient={currentPatient} />
             <LabResults labResults={labResultsData} />
