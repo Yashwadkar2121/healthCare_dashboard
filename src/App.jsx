@@ -38,7 +38,12 @@ function App() {
   // Update sidebar height based on Lab Results bottom position
   useEffect(() => {
     const updateHeight = () => {
-      if (labResultsRef.current && rightSidebarRef.current) {
+      // Only update on desktop
+      if (
+        window.innerWidth >= 1024 &&
+        labResultsRef.current &&
+        rightSidebarRef.current
+      ) {
         const labResultsRect = labResultsRef.current.getBoundingClientRect();
         const rightSidebarRect =
           rightSidebarRef.current.getBoundingClientRect();
@@ -47,13 +52,18 @@ function App() {
         const viewportHeight = window.innerHeight;
         const bottomPadding = 20;
 
-        // Calculate height from top of right sidebar to bottom of Lab Results
         const calculatedHeight = Math.min(
           bottomPosition - topOffset - bottomPadding,
           viewportHeight - topOffset - bottomPadding,
         );
 
-        setSidebarHeight(`${calculatedHeight}px`);
+        if (calculatedHeight > 100) {
+          setSidebarHeight(`${calculatedHeight}px`);
+        } else {
+          setSidebarHeight("auto");
+        }
+      } else {
+        setSidebarHeight("auto");
       }
     };
 
@@ -61,7 +71,6 @@ function App() {
     window.addEventListener("resize", updateHeight);
     window.addEventListener("scroll", updateHeight);
 
-    // Also update when content changes
     const observer = new ResizeObserver(updateHeight);
     if (labResultsRef.current) {
       observer.observe(labResultsRef.current);
@@ -125,11 +134,12 @@ function App() {
     >
       <Navbar />
 
-      {/* Mobile Menu Toggle Button */}
-      <div className="lg:hidden fixed bottom-4 right-4 z-50">
+      {/* Mobile Menu Toggle Button - Improved positioning */}
+      <div className="lg:hidden fixed bottom-6 right-4 z-50">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-[#01F0D0] text-[#072635] p-3 rounded-full shadow-lg active:scale-95 transition-transform"
+          className="bg-[#01F0D0] text-[#072635] p-3 rounded-full shadow-lg active:scale-95 transition-transform hover:bg-[#01F0D0]/90"
+          aria-label="Toggle menu"
         >
           <svg
             className="w-6 h-6"
@@ -137,12 +147,21 @@ function App() {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+            {isMobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
           </svg>
         </button>
       </div>
@@ -155,20 +174,27 @@ function App() {
         />
       )}
 
-      <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 pb-6">
+      <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 pb-20 lg:pb-6">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 max-w-[1440px] mx-auto">
-          {/* Sidebar - Patient List with dynamic height matching Lab Results bottom */}
+          {/* Sidebar - Patient List */}
           <div
             className={`
-              ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden lg:block lg:w-80"}
+              ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-[85%] max-w-sm" : "hidden lg:block lg:w-80"}
               transition-all duration-300 ease-in-out
             `}
-            style={!isMobileMenuOpen ? { height: sidebarHeight } : {}}
+            style={{
+              height:
+                !isMobileMenuOpen && window.innerWidth >= 1024
+                  ? sidebarHeight
+                  : "100%",
+            }}
           >
             <div className="h-full">
               <Sidebar
                 onSelectPatient={handlePatientSelect}
                 selectedPatientName={currentPatient?.name}
+                isMobile={isMobileMenuOpen}
+                onClose={() => setIsMobileMenuOpen(false)}
               />
             </div>
           </div>
@@ -179,8 +205,11 @@ function App() {
             <DiagnosisList diagnosticList={diagnosticListData} />
           </div>
 
-          {/* Right Sidebar */}
-          <div ref={rightSidebarRef} className="lg:w-80 space-y-4 md:space-y-6">
+          {/* Right Sidebar - Hide on mobile when menu is open */}
+          <div
+            ref={rightSidebarRef}
+            className={`lg:w-80 space-y-4 md:space-y-6 ${isMobileMenuOpen ? "hidden lg:block" : ""}`}
+          >
             <PatientInfo patient={currentPatient} />
             <div ref={labResultsRef}>
               <LabResults labResults={labResultsData} />

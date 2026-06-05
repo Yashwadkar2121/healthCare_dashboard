@@ -1,7 +1,6 @@
 // src/components/PatientInfo.jsx
 import { motion } from "framer-motion";
 
-// Import SVG icons from assets folder
 import CalendarIcon from "../assets/PatientInfo/BirthIcon.svg";
 import GenderIcon from "../assets/PatientInfo/FemaleIcon.svg";
 import PhoneIcon from "../assets/PatientInfo/PhoneIcon.svg";
@@ -36,26 +35,30 @@ const PatientInfo = ({ patient }) => {
             patient.profile_picture || "https://fedskillstest.ct.digital/4.png"
           }
           alt={patient.name}
-          className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 sm:mb-4 object-cover"
+          className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full mx-auto mb-3 sm:mb-4 object-cover"
           onError={(e) => {
             e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
               patient.name || "Jessica Taylor",
             )}&background=01F0D0&color=fff&length=2`;
           }}
         />
-        <h3 className="text-lg sm:text-xl font-bold text-[#072635]">
+        <h3 className="text-base sm:text-lg md:text-xl font-bold text-[#072635]">
           {patient.name || "Jessica Taylor"}
         </h3>
       </div>
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-2 sm:space-y-3 md:space-y-4">
         {/* Date Of Birth */}
         <div className="flex items-center py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={CalendarIcon} alt="Calendar" className="opacity-70" />
-            <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <img
+              src={CalendarIcon}
+              alt="Calendar"
+              className="w-5 h-5 sm:w-auto sm:h-auto opacity-70 flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[#072635] text-xs sm:text-sm">Date Of Birth</p>
-              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+              <p className="font-medium text-[#072635] text-xs sm:text-sm truncate">
                 {formatDate(patient.date_of_birth)}
               </p>
             </div>
@@ -64,11 +67,15 @@ const PatientInfo = ({ patient }) => {
 
         {/* Gender */}
         <div className="flex items-center py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={GenderIcon} alt="Gender" className="opacity-70" />
-            <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <img
+              src={GenderIcon}
+              alt="Gender"
+              className="w-5 h-5 sm:w-auto sm:h-auto opacity-70 flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[#072635] text-xs sm:text-sm">Gender</p>
-              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+              <p className="font-medium text-[#072635] text-xs sm:text-sm truncate">
                 {patient.gender || "Female"}
               </p>
             </div>
@@ -77,11 +84,15 @@ const PatientInfo = ({ patient }) => {
 
         {/* Contact Info */}
         <div className="flex items-center py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={PhoneIcon} alt="Phone" className="opacity-70" />
-            <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <img
+              src={PhoneIcon}
+              alt="Phone"
+              className="w-5 h-5 sm:w-auto sm:h-auto opacity-70 flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[#072635] text-xs sm:text-sm">Contact Info</p>
-              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+              <p className="font-medium text-[#072635] text-xs sm:text-sm truncate">
                 {patient.phone_number || "(415) 555-1234"}
               </p>
             </div>
@@ -90,13 +101,17 @@ const PatientInfo = ({ patient }) => {
 
         {/* Emergency Contacts */}
         <div className="flex items-center py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={PhoneIcon} alt="Emergency" className="opacity-70" />
-            <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <img
+              src={PhoneIcon}
+              alt="Emergency"
+              className="w-5 h-5 sm:w-auto sm:h-auto opacity-70 flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[#072635] text-xs sm:text-sm">
                 Emergency Contacts
               </p>
-              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+              <p className="font-medium text-[#072635] text-xs sm:text-sm truncate">
                 {patient.emergency_contact || "(415) 555-5678"}
               </p>
             </div>
@@ -105,13 +120,17 @@ const PatientInfo = ({ patient }) => {
 
         {/* Insurance Provider */}
         <div className="flex items-center py-2 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <img src={InsuranceIcon} alt="Insurance" className="opacity-70" />
-            <div>
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <img
+              src={InsuranceIcon}
+              alt="Insurance"
+              className="w-5 h-5 sm:w-auto sm:h-auto opacity-70 flex-shrink-0"
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[#072635] text-xs sm:text-sm">
                 Insurance Provider
               </p>
-              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+              <p className="font-medium text-[#072635] text-xs sm:text-sm truncate">
                 {patient.insurance_type || "Sunrise Health Assurance"}
               </p>
             </div>

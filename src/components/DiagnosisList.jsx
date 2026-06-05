@@ -18,7 +18,8 @@ const DiagnosisList = ({ diagnosticList }) => {
         Diagnostic List
       </h3>
 
-      <div className="overflow-x-auto -mx-4 sm:mx-0">
+      {/* Desktop Table View */}
+      <div className="hidden sm:block overflow-x-auto -mx-4 sm:mx-0">
         <div className="inline-block min-w-full align-middle">
           <table className="min-w-full border-separate border-spacing-0">
             <thead>
@@ -64,6 +65,45 @@ const DiagnosisList = ({ diagnosticList }) => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="sm:hidden space-y-3">
+        {diagnosticList.map((diagnostic, index) => (
+          <div
+            key={index}
+            className="border border-gray-100 rounded-xl p-3 bg-white"
+          >
+            <div className="mb-2">
+              <span className="text-xs font-semibold text-[#072635] block mb-1">
+                Problem/Diagnosis
+              </span>
+              <p className="text-sm text-gray-800">{diagnostic.name}</p>
+            </div>
+            <div className="mb-2">
+              <span className="text-xs font-semibold text-[#072635] block mb-1">
+                Description
+              </span>
+              <p className="text-sm text-gray-600">{diagnostic.description}</p>
+            </div>
+            <div>
+              <span className="text-xs font-semibold text-[#072635] block mb-1">
+                Status
+              </span>
+              <span
+                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                  diagnostic.status === "Under Observation"
+                    ? "bg-amber-100 text-amber-700"
+                    : diagnostic.status === "Cured"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {diagnostic.status}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );

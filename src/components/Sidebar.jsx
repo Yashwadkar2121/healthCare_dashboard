@@ -2,7 +2,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
-const Sidebar = ({ onSelectPatient, selectedPatientName }) => {
+const Sidebar = ({
+  onSelectPatient,
+  selectedPatientName,
+  isMobile,
+  onClose,
+}) => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,24 +86,47 @@ const Sidebar = ({ onSelectPatient, selectedPatientName }) => {
           <h3 className="text-xl sm:text-2xl font-bold text-[#072635]">
             Patients
           </h3>
-          <button
-            onClick={toggleSearch}
-            className="text-gray-400 hover:text-[#072635] transition-colors"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleSearch}
+              className="text-gray-400 hover:text-[#072635] transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+            </button>
+            {isMobile && onClose && (
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-red-500 transition-colors lg:hidden"
+                aria-label="Close menu"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
         <div className="text-center py-8">
           <div className="text-red-500 mb-2">⚠️</div>
@@ -128,24 +156,50 @@ const Sidebar = ({ onSelectPatient, selectedPatientName }) => {
           <h3 className="text-xl sm:text-2xl font-bold text-[#072635]">
             Patients
           </h3>
-          <button
-            onClick={toggleSearch}
-            className={`text-gray-400 hover:text-[#072635] transition-colors ${showSearch ? "text-[#01F0D0]" : ""}`}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleSearch}
+              className={`text-gray-400 hover:text-[#072635] transition-colors ${
+                showSearch ? "text-[#01F0D0]" : ""
+              }`}
+              aria-label="Search patients"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+            </button>
+            {isMobile && onClose && (
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-red-500 transition-colors lg:hidden"
+                aria-label="Close menu"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search Input - Animated */}
@@ -190,7 +244,7 @@ const Sidebar = ({ onSelectPatient, selectedPatientName }) => {
                 className={`flex items-center justify-between p-2 sm:p-3 rounded-xl cursor-pointer transition-all duration-200 ${
                   selectedPatientName === patient.name
                     ? "bg-[#D8FCF7]"
-                    : "hover:bg-gray-50"
+                    : "hover:bg-gray-50 active:bg-gray-100"
                 }`}
               >
                 <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
@@ -213,7 +267,10 @@ const Sidebar = ({ onSelectPatient, selectedPatientName }) => {
                     </p>
                   </div>
                 </div>
-                <button className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 ml-2">
+                <button
+                  className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 ml-2"
+                  aria-label="More options"
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
