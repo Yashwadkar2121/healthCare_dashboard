@@ -15,7 +15,9 @@ function App() {
   const [error, setError] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [sidebarHeight, setSidebarHeight] = useState("auto");
 
+  const labResultsRef = useRef(null);
   const rightSidebarRef = useRef(null);
 
   useEffect(() => {
@@ -32,6 +34,48 @@ function App() {
     };
     loadPatientData();
   }, []);
+
+  // Update sidebar height based on Lab Results bottom position
+  useEffect(() => {
+    const updateHeight = () => {
+      if (labResultsRef.current && rightSidebarRef.current) {
+        const labResultsRect = labResultsRef.current.getBoundingClientRect();
+        const rightSidebarRect =
+          rightSidebarRef.current.getBoundingClientRect();
+        const topOffset = rightSidebarRect.top;
+        const bottomPosition = labResultsRect.bottom;
+        const viewportHeight = window.innerHeight;
+        const bottomPadding = 20;
+
+        // Calculate height from top of right sidebar to bottom of Lab Results
+        const calculatedHeight = Math.min(
+          bottomPosition - topOffset - bottomPadding,
+          viewportHeight - topOffset - bottomPadding,
+        );
+
+        setSidebarHeight(`${calculatedHeight}px`);
+      }
+    };
+
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    window.addEventListener("scroll", updateHeight);
+
+    // Also update when content changes
+    const observer = new ResizeObserver(updateHeight);
+    if (labResultsRef.current) {
+      observer.observe(labResultsRef.current);
+    }
+    if (rightSidebarRef.current) {
+      observer.observe(rightSidebarRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+      window.removeEventListener("scroll", updateHeight);
+      observer.disconnect();
+    };
+  }, [selectedPatient, patientData]);
 
   const handlePatientSelect = useCallback((patient) => {
     setSelectedPatient(patient);
@@ -113,12 +157,13 @@ function App() {
 
       <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 pb-6">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 max-w-[1440px] mx-auto">
-          {/* Sidebar - Patient List */}
+          {/* Sidebar - Patient List with dynamic height matching Lab Results bottom */}
           <div
             className={`
               ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden lg:block lg:w-80"}
               transition-all duration-300 ease-in-out
             `}
+            style={!isMobileMenuOpen ? { height: sidebarHeight } : {}}
           >
             <div className="h-full">
               <Sidebar
@@ -137,7 +182,9 @@ function App() {
           {/* Right Sidebar */}
           <div ref={rightSidebarRef} className="lg:w-80 space-y-4 md:space-y-6">
             <PatientInfo patient={currentPatient} />
-            <LabResults labResults={labResultsData} />
+            <div ref={labResultsRef}>
+              <LabResults labResults={labResultsData} />
+            </div>
           </div>
         </div>
       </div>
