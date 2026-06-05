@@ -1,6 +1,12 @@
 // src/components/PatientInfo.jsx
 import { motion } from "framer-motion";
 
+// Import SVG icons from assets folder
+import CalendarIcon from "../assets/PatientInfo/BirthIcon.svg";
+import GenderIcon from "../assets/PatientInfo/FemaleIcon.svg";
+import PhoneIcon from "../assets/PatientInfo/PhoneIcon.svg";
+import InsuranceIcon from "../assets/PatientInfo/InsuranceIcon.svg";
+
 const PatientInfo = ({ patient }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -43,49 +49,73 @@ const PatientInfo = ({ patient }) => {
       </div>
 
       <div className="space-y-3 sm:space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
-          <span className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-0">
-            Date Of Birth
-          </span>
-          <span className="font-medium text-[#072635] text-xs sm:text-sm">
-            {formatDate(patient.date_of_birth)}
-          </span>
+        {/* Date Of Birth */}
+        <div className="flex items-center py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={CalendarIcon} alt="Calendar" className="opacity-70" />
+            <div>
+              <p className="text-[#072635] text-xs sm:text-sm">Date Of Birth</p>
+              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+                {formatDate(patient.date_of_birth)}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
-          <span className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-0">
-            Gender
-          </span>
-          <span className="font-medium text-[#072635] text-xs sm:text-sm">
-            {patient.gender || "Female"}
-          </span>
+        {/* Gender */}
+        <div className="flex items-center py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={GenderIcon} alt="Gender" className="opacity-70" />
+            <div>
+              <p className="text-[#072635] text-xs sm:text-sm">Gender</p>
+              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+                {patient.gender || "Female"}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
-          <span className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-0">
-            Contact Info
-          </span>
-          <span className="font-medium text-[#072635] text-xs sm:text-sm">
-            {patient.phone_number || "(415) 555-1234"}
-          </span>
+        {/* Contact Info */}
+        <div className="flex items-center py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={PhoneIcon} alt="Phone" className="opacity-70" />
+            <div>
+              <p className="text-[#072635] text-xs sm:text-sm">Contact Info</p>
+              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+                {patient.phone_number || "(415) 555-1234"}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
-          <span className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-0">
-            Emergency Contacts
-          </span>
-          <span className="font-medium text-[#072635] text-xs sm:text-sm">
-            {patient.emergency_contact || "(415) 555-5678"}
-          </span>
+        {/* Emergency Contacts */}
+        <div className="flex items-center py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={PhoneIcon} alt="Emergency" className="opacity-70" />
+            <div>
+              <p className="text-[#072635] text-xs sm:text-sm">
+                Emergency Contacts
+              </p>
+              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+                {patient.emergency_contact || "(415) 555-5678"}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-gray-100">
-          <span className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-0">
-            Insurance Provider
-          </span>
-          <span className="font-medium text-[#072635] text-xs sm:text-sm">
-            {patient.insurance_type || "Sunrise Health Assurance"}
-          </span>
+        {/* Insurance Provider */}
+        <div className="flex items-center py-2 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <img src={InsuranceIcon} alt="Insurance" className="opacity-70" />
+            <div>
+              <p className="text-[#072635] text-xs sm:text-sm">
+                Insurance Provider
+              </p>
+              <p className="font-medium text-[#072635] text-xs sm:text-sm">
+                {patient.insurance_type || "Sunrise Health Assurance"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
