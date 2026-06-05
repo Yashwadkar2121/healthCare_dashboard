@@ -20,16 +20,16 @@ const DiagnosisList = ({ diagnosticList }) => {
 
       <div className="overflow-x-auto -mx-4 sm:mx-0">
         <div className="inline-block min-w-full align-middle">
-          <table className="min-w-full">
+          <table className="min-w-full border-separate border-spacing-0">
             <thead>
-              <tr className="bg-gray-50 rounded-lg">
-                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635]">
+              <tr>
+                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635] bg-gray-50 rounded-l-2xl sm:rounded-l-3xl border-y border-l border-gray-200">
                   Problem/Diagnosis
                 </th>
-                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635]">
+                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635] bg-gray-50 border-y border-gray-200">
                   Description
                 </th>
-                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635]">
+                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-[#072635] bg-gray-50 rounded-r-2xl sm:rounded-r-3xl border-y border-r border-gray-200">
                   Status
                 </th>
               </tr>
