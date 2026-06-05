@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -15,6 +15,9 @@ function App() {
   const [error, setError] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [sidebarHeight, setSidebarHeight] = useState("auto");
+
+  const rightSidebarRef = useRef(null);
 
   useEffect(() => {
     const loadPatientData = async () => {
@@ -30,6 +33,38 @@ function App() {
     };
     loadPatientData();
   }, []);
+
+  // Update sidebar height based on right sidebar height
+  useEffect(() => {
+    const updateHeight = () => {
+      if (rightSidebarRef.current) {
+        const rightSidebarRect =
+          rightSidebarRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const topOffset = rightSidebarRect.top;
+        const bottomPadding = 20;
+        const availableHeight = Math.min(
+          rightSidebarRect.height,
+          viewportHeight - topOffset - bottomPadding,
+        );
+        setSidebarHeight(`${availableHeight}px`);
+      }
+    };
+
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+
+    // Also update when content changes
+    const observer = new ResizeObserver(updateHeight);
+    if (rightSidebarRef.current) {
+      observer.observe(rightSidebarRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+      observer.disconnect();
+    };
+  }, [selectedPatient, patientData]);
 
   const handlePatientSelect = useCallback((patient) => {
     setSelectedPatient(patient);
@@ -111,17 +146,20 @@ function App() {
 
       <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 pb-6">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6 max-w-[1440px] mx-auto">
-          {/* Sidebar - Patient List */}
+          {/* Sidebar - Patient List with dynamic height */}
           <div
             className={`
-            ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden lg:block lg:w-80"}
-            transition-all duration-300 ease-in-out
-          `}
+              ${isMobileMenuOpen ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden lg:block lg:w-80"}
+              transition-all duration-300 ease-in-out
+            `}
+            style={!isMobileMenuOpen ? { height: sidebarHeight } : {}}
           >
-            <Sidebar
-              onSelectPatient={handlePatientSelect}
-              selectedPatientName={currentPatient?.name}
-            />
+            <div className="h-full">
+              <Sidebar
+                onSelectPatient={handlePatientSelect}
+                selectedPatientName={currentPatient?.name}
+              />
+            </div>
           </div>
 
           {/* Main Content */}
@@ -130,8 +168,8 @@ function App() {
             <DiagnosisList diagnosticList={diagnosticListData} />
           </div>
 
-          {/* Right Sidebar */}
-          <div className="lg:w-80 space-y-4 md:space-y-6">
+          {/* Right Sidebar - Reference for height */}
+          <div ref={rightSidebarRef} className="lg:w-80 space-y-4 md:space-y-6">
             <PatientInfo patient={currentPatient} />
             <LabResults labResults={labResultsData} />
           </div>
