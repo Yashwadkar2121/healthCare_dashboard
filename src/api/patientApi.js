@@ -1,9 +1,10 @@
 // src/api/patientApi.js
 const API_BASE = "https://fedskillstest.coalitiontechnologies.workers.dev";
 
-// Basic Auth credentials
-const username = "coalition";
-const password = "skills-test";
+// Read credentials from environment variables (Vite)
+const username = import.meta.env.VITE_API_USERNAME;
+const password = import.meta.env.VITE_API_PASSWORD;
+
 const basicAuth = btoa(`${username}:${password}`);
 
 export const fetchPatientData = async () => {
